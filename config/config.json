@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "administrator",
+    "password": "YW3SS6emJa9lKDpTHges",
+    "database": "MTGCardCollections",
+    "host": "mtg-card-collections.cyvkkthyeenx.us-east-1.rds.amazonaws.com",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  }
+}
