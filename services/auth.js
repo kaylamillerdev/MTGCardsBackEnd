@@ -1,11 +1,10 @@
-var models = require('../models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const secretKey = 'secretKey';
 
-var authService = {
+let authService = {
     signUser: function(user) {
-        const token = jwt.sign(
+        let token = jwt.sign(
             {
                 email: user.email,
                 UserId: user.id
@@ -17,9 +16,9 @@ var authService = {
         );
         return token;
     },
-    verifyUser: function (token, callBackfunction) {
+    verifyUser: function (token, callBackFunction) {
     try {
-        return jwt.verify(token, secretKey, callBackfunction);
+        return jwt.verify(token, secretKey, callBackFunction);
     } catch (err) {
         console.log(err);
         return null;
