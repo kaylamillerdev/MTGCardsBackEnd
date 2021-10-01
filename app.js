@@ -13,7 +13,7 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-app.use(cors( {origin: ['http://localhost:4200']}));
+app.use(cors( {origin: ['http://localhost:4200', 'https://relaxed-lalande-20b424.netlify.app']}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
