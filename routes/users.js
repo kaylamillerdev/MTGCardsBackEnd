@@ -1,77 +1,101 @@
 var express = require('express');
 var router = express.Router();
+var models = require('../models'); //<--- Add models
+var authService = require('../services/auth'); //<--- Add authentication service
 
-const Users = require('../models').Users;
-const authService = require('../services/auth');
-
-const defaultErr = (err, res) => {
-  res.status(500);
-  res.send(err.toString());
-};
-
-router.route('/users/signup')
-    .post((req, res, next) => {
-      Users
-          .create({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            password: (req.body.password)
-          })
-          .then((newUser) => {
-            newUser = newUser.dataValues;
-            newUser = { ...newUser, token: authService.signUser(newUser)};
-            console.log(newUser);
-            res.json(newUser);
-          }).catch(e => defaultErr(e, res))
-    });
-
-// Login Route
-router.route('/users/login')
-    .post(function (req, res) {
-      // console.log("Something fishy");
-      //console.log(req);
-      var email = req.body.email;
-      if (email == null || req.body.password == null) {
-        res.status(403).send('body missing email or password. is the form missing some fields?')
-      }
-      Users.findOne({
-        where: { email: email }
-      }).then(user => {
-        if (user == null) {
-          //console.log(user)
-          res.status(404).send("User not found");
-        } else if (authService.comparePasswords(req.body.password, user.password)) {
-          //you'll need this for later
-          //console.log(user.dataValues)
-          user.save().then(
-              u => {
-                res.json({
-                  ...u.dataValues,
-                  token: authService.signUser(u)
-                });
-              }
-          );
-
-        } else {
-          res.status(418).send("authentication failed. bad password.");
-        }
-      }).catch(e => defaultErr(e, res));
-    });
-
-//trust but verify user
-router.post('/verify', function (req, res) {
-  var token = req.headers.auth;
-  //console.log(req.headers);
-  console.log(token);
-  authService.verifyUser(token, (err, decoded) => {
-    if (err) {
-      res.send(err);
-    } else {
-      // console.log(decoded)
-      res.send("succes");
-    }
-  });
+/* GET users listing. */
+router.get('/', function (req, res, next) {
+    res.send('respond with a resource');
 });
+// GET signup page when navigate to users/signup
+router.get('/signup', function(req, res, next) {
+    res.render('signup');
+})
+// Create new user if one doesn't exist
+router.post('/signup', function(req, res, next) {
+    models.users
+        .findOrCreate({
+            where: {
+                Username: req.body.Username
+            },
+            defaults: {
+                FirstName: req.body.FirstName,
+                LastName: req.body.LastName,
+                Email: req.body.Email,
+                Password: authService.hashPassword(req.body.Password)
+            }
+        })
+        .spread(function(result, created) {
+            if (created) {
+                //res.send('User successfully created');
+                res.send(JSON.stringify({redirect: '/login'}));
+            } else {
+                res.send('This user already exists');
+            }
+        });
+});
+// Login user and return JWT as cookie
+router.post('/login', function (req, res, next) {
+    models.users.findOne({
+        where: {
+            Username: req.body.Username
+        }
+    }).then(user => {
+        console.log("in the login route");
+        if (!user) {
+            console.log('User not found')
+            return res.status(401).json({
+                message: "Login Failed"
+            });
+        } else {
+            let passwordMatch = authService.comparePasswords(req.body.Password, user.Password);
+            console.log(passwordMatch);
+            if (passwordMatch) {
+                let token = authService.signUser(user);
+                res.cookie('jwt', token);
+                res.send(JSON.stringify({redirect: '/home'}));
+            } else {
+                console.log('Wrong password');
+                res.send('Wrong password');
+            }
+        }
+    });
+});
+
+//  GET profile page of user that's currently logged in
+router.get("/profile", function(req, res, next) {
+    let token = req.cookies.jwt;
+    if (token) {
+        authService.verifyUser(token).then(user => {
+            if (user) {
+                models.users
+                    .findAll({
+                        where: { UserId: user.UserId },
+                        include: [{ model: models.posts }]
+                    })
+                    .then(result => {
+                        console.log(result);
+                        res.render("profile", { user: result[0] });
+                    });
+            } else {
+                res.status(401);
+                res.send("Invalid authentication token");
+            }
+        });
+    } else {
+        res.status(401);
+        res.send("Must be logged in");
+    }
+});
+
+//get logout screen!
+router.get('/logout', function (req, res, next) {
+    res.cookie('jwt', "", { expires: new Date(0) });
+    //res.render('logout');
+});
+
+router.post('profile', function(req, res, next) {
+    res.render('profile');
+})
 
 module.exports = router;
