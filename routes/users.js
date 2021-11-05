@@ -1,19 +1,24 @@
-var express = require('express');
-var router = express.Router();
-var models = require('../models'); //<--- Add models
-var authService = require('../services/auth'); //<--- Add authentication service
+import { Router } from 'express';
+const router = Router();
+import { Users, Cards } from '../models'; //<--- Add models
+import { hashPassword, comparePasswords, signUser, verifyUser } from '../services/auth'; //<--- Add authentication service
+import cors from 'cors';
+const corsOptions = {
+    origin: "http://localhost:4200",
+    optionsSuccessStatus: 200
+};
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
+router.get('/', cors(corsOptions), function (req, res, next) {
     res.send('respond with a resource');
 });
 // GET signup page when navigate to users/signup
-router.get('/signup', function(req, res, next) {
+router.get('/signup', cors(corsOptions), function(req, res, next) {
     res.render('signup');
 })
 // Create new user if one doesn't exist
-router.post('/signup', function(req, res, next) {
-    models.users
+router.post('/signup', cors(corsOptions), function(req, res, next) {
+    Users
         .findOrCreate({
             where: {
                 Username: req.body.Username
@@ -22,7 +27,7 @@ router.post('/signup', function(req, res, next) {
                 FirstName: req.body.FirstName,
                 LastName: req.body.LastName,
                 Email: req.body.Email,
-                Password: authService.hashPassword(req.body.Password)
+                Password: hashPassword(req.body.Password)
             }
         })
         .spread(function(result, created) {
@@ -35,8 +40,8 @@ router.post('/signup', function(req, res, next) {
         });
 });
 // Login user and return JWT as cookie
-router.post('/login', function (req, res, next) {
-    models.users.findOne({
+router.post('/login', cors(corsOptions), function (req, res, next) {
+    Users.findOne({
         where: {
             Username: req.body.Username
         }
@@ -48,10 +53,10 @@ router.post('/login', function (req, res, next) {
                 message: "Login Failed"
             });
         } else {
-            let passwordMatch = authService.comparePasswords(req.body.Password, user.Password);
+            let passwordMatch = comparePasswords(req.body.Password, user.Password);
             console.log(passwordMatch);
             if (passwordMatch) {
-                let token = authService.signUser(user);
+                let token = signUser(user);
                 res.cookie('jwt', token);
                 res.send(JSON.stringify({redirect: '/home'}));
             } else {
@@ -63,15 +68,15 @@ router.post('/login', function (req, res, next) {
 });
 
 //  GET profile page of user that's currently logged in
-router.get("/profile", function(req, res, next) {
+router.get("/profile", cors(corsOptions), function(req, res, next) {
     let token = req.cookies.jwt;
     if (token) {
-        authService.verifyUser(token).then(user => {
+        verifyUser(token).then(user => {
             if (user) {
-                models.users
+                Users
                     .findAll({
                         where: { UserId: user.UserId },
-                        include: [{ model: models.posts }]
+                        include: [{ model: Cards }]
                     })
                     .then(result => {
                         console.log(result);
@@ -89,13 +94,13 @@ router.get("/profile", function(req, res, next) {
 });
 
 //get logout screen!
-router.get('/logout', function (req, res, next) {
+router.get('/logout', cors(corsOptions), function (req, res, next) {
     res.cookie('jwt', "", { expires: new Date(0) });
     //res.render('logout');
 });
 
-router.post('profile', function(req, res, next) {
+router.post('profile', cors(corsOptions), function(req, res, next) {
     res.render('profile');
 })
 
-module.exports = router;
+export default router;

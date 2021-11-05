@@ -1,42 +1,44 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var models = require('./models');
-var passport = require('passport');
-var session = require('express-session');
+import createError from 'http-errors';
+import express, { json, urlencoded, statics } from 'express';
+import { join } from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import { sequelize } from './models/index.js';
+import { initialize, session as _session } from 'passport';
+import session from 'express-session';
 
-var cors = require('cors');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+import cors from 'cors';
+import routes from './routes/index';
+import indexRouter from './routes/index';
+import usersRouter from './routes/users';
+import cardsRouter from './routes/cards';
 
 var app = express();
-//app.use(cors());
+
+app.use(cors);
+
+
+app.use(json());
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-// Header setup
-app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
+
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(json());
+app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(statics(join(__dirname, 'public')));
 
 app.use(session({ secret: 'perilous journey' }));
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(initialize());
+app.use(_session());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -54,8 +56,8 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-models.sequelize.sync().then(function () {
+sequelize.sync().then(function () {
     console.log("DB Sync'd up")
 });
 
-module.exports = app;
+export default app;

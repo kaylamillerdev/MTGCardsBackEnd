@@ -1,13 +1,13 @@
 // Bring in the required libraries
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var models = require('../models');
+import passport, { use, serializeUser, deserializeUser } from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { users } from '../models';
 
 // Configure the login validation
-passport.use(
+use(
     'local',
     new LocalStrategy(function (username, password, done) {
-        models.users.findOne({ where: { Username: username } })
+        users.findOne({ where: { Username: username } })
             .then(user => {
                 if (!user) {
                     return done(null, false, { message: 'Incorrect username.' });
@@ -24,16 +24,16 @@ passport.use(
 );
 
 // Stores the user id in the user session
-passport.serializeUser((user, callback) => {
+serializeUser((user, callback) => {
     callback(null, user.UserId);
 });
 
 // Queries the database for the user details and adds to the request object in the routes
-passport.deserializeUser((id, callback) => {
-    models.users
+deserializeUser((id, callback) => {
+    users
         .findByPk(id)
         .then(user => callback(null, user))
         .catch(err => callback(err));
 });
 
-module.exports = passport;
+export default passport;

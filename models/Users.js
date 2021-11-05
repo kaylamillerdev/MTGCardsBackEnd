@@ -1,27 +1,50 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const users = sequelize.define('users', {
+import Sequelize from 'sequelize';
+export default function(sequelize, DataTypes) {
+  return sequelize.define('users', {
     UserId: {
-      type: DataTypes.INTEGER,
       autoIncrement: true,
-      primaryKey: true,
-      allowNull: false
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true
     },
-    FirstName: DataTypes.STRING,
-    LastName: DataTypes.STRING,
-    Username: DataTypes.STRING,
-    Password: DataTypes.STRING,
-    Email: DataTypes.STRING,
+    FirstName: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    LastName: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    Username: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    Password: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    Email: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     Admin: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false
-    },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE
-  }, {});
-  users.associate = function(models) {
-    // associations can be defined here
-  };
-  return users;
+      allowNull: false,
+      defaultValue: 0
+    }
+  }, {
+    sequelize,
+    tableName: 'users',
+    timestamps: true,
+    indexes: [
+      {
+        name: "PRIMARY",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "UserId" },
+        ]
+      },
+    ]
+  });
 };

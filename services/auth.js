@@ -1,10 +1,10 @@
-const jwt = require('jsonwebtoken');
-const models = require('../models/index');
-const bcrypt = require("bcryptjs");
+import { sign, verify } from 'jsonwebtoken';
+import user from '../models/user';
+import { genSaltSync, hashSync, compareSync } from "bcryptjs";
 
 var authService = {
     signUser: function(user) {
-        const token = jwt.sign(
+        const token = sign(
             {
                 Username: user.Username,
                 UserId: user.UserId,
@@ -20,21 +20,21 @@ var authService = {
 
     verifyUser: function (token) {  //<--- receive JWT token as parameter
         try {
-            let decoded = jwt.verify(token, 'secretkey'); //<--- Decrypt token using same key used to encrypt
-            return models.users.findByPk(decoded.UserId); //<--- Return result of database query as promise
+            let decoded = verify(token, 'secretkey'); //<--- Decrypt token using same key used to encrypt
+            return user.findByPk(decoded.UserId); //<--- Return result of database query as promise
         } catch (err) {
             console.log(err);
             return null;
         }
     },
     hashPassword: function(plainTextPassword) {
-        let salt = bcrypt.genSaltSync(10);
-        let hash = bcrypt.hashSync(plainTextPassword, salt);
+        let salt = genSaltSync(10);
+        let hash = hashSync(plainTextPassword, salt);
         return hash;
     },
     comparePasswords: function (plainTextPassword, hashedPassword) {
-        return bcrypt.compareSync(plainTextPassword, hashedPassword)
+        return compareSync(plainTextPassword, hashedPassword)
     }
 }
 
-module.exports = authService;
+export default authService;
