@@ -1,0 +1,13 @@
+Color pallete
+
+Light Green
+#E8F2EA
+
+Light Orange
+#F2EAE8
+
+Light Pink
+#F2E8F0
+
+Base Color(Signup page)
+#E8F0F2

@@ -1,41 +1,24 @@
 {
-  "name": "mtgcardsbackend",
-  "version": "1.0.0",
-  "description": "This is the backend for the Magic Collection Web Application.\r The Front end is housed in a different repo.",
-  "main": "app.js",
-  "type": "module",
-  "dependencies": {
-    "@types/sequelize": "^4.28.10",
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "debug": "^4.3.2",
-    "esm": "^3.2.25",
-    "express": "^4.17.1",
-    "express-session": "^1.17.2",
-    "http-errors": "^1.8.0",
-    "jsonwebtoken": "^8.5.1",
-    "morgan": "^1.10.0",
-    "mysql": "^2.18.1",
-    "mysql2": "^2.3.0",
-    "nodemon": "^2.0.13",
-    "passport": "^0.5.0",
-    "passport-local": "^1.0.0",
-    "sequelize": "^4.43.0"
-  },
-  "devDependencies": {},
+  "name": "mtgcardcollectionfinal",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kaylamillerdev/MTGCardsBackEnd.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/kaylamillerdev/MTGCardsBackEnd/issues"
-  },
-  "homepage": "https://github.com/kaylamillerdev/MTGCardsBackEnd#readme"
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "connect-mongo": "^4.6.0",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "express-session": "^1.17.2",
+    "hbs": "~4.0.4",
+    "http-errors": "~1.6.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.1.4",
+    "mongoose": "^6.0.12",
+    "morgan": "~1.9.1",
+    "nodemon": "^2.0.15"
+  }
 }

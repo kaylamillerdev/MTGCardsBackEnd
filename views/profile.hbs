@@ -1,0 +1,28 @@
+<nav class="nav">
+    <div class="container">
+        <form class="navForm" action="/home" method="GET">
+            <button class="navBtn">Home</button>
+        </form>
+        <form class="navForm" action="/users/signup" method="GET">
+            <button class="navBtn">Signup</button>
+        </form>
+        <form class="navForm" action="/users/login" method="GET">
+            <button class="navBtn">Logout</button>
+        </form>
+        <h1>{{firstName}} {{lastName}} </h1>
+    </div>
+</nav>
+
+
+
+<section class="cardContainer">
+    {{#each cardsOwned}}
+        <div class="card">
+            <h3 class="cardName">{{name}}</h3>
+            <img class="cardImg" src='{{image}}'/>
+            <p> Printing: {{printing}}</p>
+            <p id="numOwned"> Number Owned: {{numOwned}}</p>
+        </div>
+    {{/each}}
+</section>
+

@@ -1,0 +1,27 @@
+.nav {
+    display: flex;
+    flex-direction: row;
+    background-color: darkgrey;
+    padding: 10px;
+    margin: 0px;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.navForm {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.navBtn {
+    border: none;
+    background-color: mediumpurple;
+    border-radius: 5px;
+    font-family: Nunito, sans-serif;
+    font-size: large;
+}
